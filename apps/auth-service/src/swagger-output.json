@@ -1,45 +1,75 @@
 {
-	"swagger": "2.0",
-	"info": {
-		"title": "Auth Service API",
-		"description": "Automatically generated Swagger docs",
-		"version": "1.0.0"
-	},
-	"host": "localhost:6001",
-	"basePath": "/",
-	"schemes": [
-		"http"
-	],
-	"paths": {
-		"/api/register": {
-			"post": {
-				"description": "",
-				"parameters": [
-					{
-						"name": "body",
-						"in": "body",
-						"schema": {
-							"type": "object",
-							"properties": {
-								"name": {
-									"example": "Arunabho"
-								},
-								"email": {
-									"example": "geekarun123@gmail.com"
-								},
-								"password": {
-									"example": "1234"
-								}
-							}
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK"
-					}
-				}
-			}
-		}
-	}
+  "swagger": "2.0",
+  "info": {
+    "title": "Auth Service API",
+    "description": "Automatically generated Swagger docs",
+    "version": "1.0.0"
+  },
+  "host": "localhost:6001",
+  "basePath": "/api",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/register": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/verify-user": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "example": "Arunabho"
+                },
+                "otp": {
+                  "example": "1324"
+                },
+                "email": {
+                  "example": "barunabho@gmail.com"
+                },
+                "password": {
+                  "example": "1234"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    }
+  }
 }

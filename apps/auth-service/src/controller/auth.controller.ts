@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { checkOtpRestrictions, sendOtp, trackOtpRequests, validateRegistrationData, verifyOtp } from "../utils/auth.helper";
 import prisma from "@packages/libs/prisma";
 import { ValidationError } from "@packages/error-handler";
+import bcrypt from "node_modules/bcryptjs";
 
 
 // Register a new user
@@ -47,7 +48,7 @@ export const verifyUser = async (
 ) => {
 	try {
 		const { name, otp, email, password } = req.body;
-		if(email || !otp || !email || !password) {
+		if(!email || !otp || !name || !password) {
 			return next(new ValidationError("All fields are required!"));
 		}
 		const existingUser = await prisma.users.findUnique({
@@ -59,7 +60,23 @@ export const verifyUser = async (
 		}
 
 		await verifyOtp(email, otp, next);
+
+		const hashedPassword = await bcrypt.hash(password, 10);
+
+		await prisma.users.create({
+			data : {
+				name,
+				email,
+				password: hashedPassword
+			},
+
+		});
+
+		res.status(201).json({
+			success: true,
+			message: "User registered successfully!"
+		});
 	} catch (error) {
-		
+		return next(error);
 	}
 }
