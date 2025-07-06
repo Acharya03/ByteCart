@@ -6,12 +6,12 @@
 		"version": "1.0.0"
 	},
 	"host": "localhost:6001",
-	"basePath": "/",
+	"basePath": "/api",
 	"schemes": [
 		"http"
 	],
 	"paths": {
-		"/api/register": {
+		"/register": {
 			"post": {
 				"description": "",
 				"parameters": [
@@ -22,13 +22,13 @@
 							"type": "object",
 							"properties": {
 								"name": {
-									"example": "Arunabho"
+									"example": "any"
 								},
 								"email": {
-									"example": "geekarun123@gmail.com"
+									"example": "any"
 								},
 								"password": {
-									"example": "1234"
+									"example": "any"
 								}
 							}
 						}
@@ -37,6 +37,39 @@
 				"responses": {
 					"200": {
 						"description": "OK"
+					}
+				}
+			}
+		},
+		"/verify-user": {
+			"post": {
+				"description": "",
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"name": {
+									"example": "any"
+								},
+								"otp": {
+									"example": "any"
+								},
+								"email": {
+									"example": "any"
+								},
+								"password": {
+									"example": "any"
+								}
+							}
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "Created"
 					}
 				}
 			}
