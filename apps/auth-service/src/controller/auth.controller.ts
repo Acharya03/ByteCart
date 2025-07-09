@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { checkOtpRestrictions, sendOtp, trackOtpRequests, validateRegistrationData, verifyOtp } from "../utils/auth.helper";
 import prisma from "@packages/libs/prisma";
-import { ValidationError } from "@packages/error-handler";
+import { AuthError, ValidationError } from "@packages/error-handler";
 import bcrypt from "node_modules/bcryptjs";
+import jwt from 'jsonwebtoken';
+import { setCookie } from "../utils/cookies/setCookie";
 
 
 // Register a new user
@@ -76,6 +78,69 @@ export const verifyUser = async (
 			success: true,
 			message: "User registered successfully!"
 		});
+	} catch (error) {
+		return next(error);
+	}
+}
+
+//login user
+export const loginUser = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const { email, password } = req.body;
+
+		if(!email || !password) {
+			return next(
+				new ValidationError("Email and password are required!")
+			);
+		}
+
+		const user = await prisma.users.findUnique({
+			where: { email }
+		});
+
+		if(!user) {
+			return next(
+				new AuthError("User does not exist!")
+			);
+		}
+
+		
+		//verify password
+		const isMatch = await bcrypt.compare(password, user.password!);
+		if(!isMatch) {
+			return next(
+				new AuthError("Invalid email or password")
+			);
+		}
+
+		//generate access and refresh token
+		const accessToken = jwt.sign({__id: user.id, role: "user"}, 
+			process.env.ACCESS_TOKEN_SECRET as string,
+			{
+				expiresIn: "15m",
+			}
+		);
+
+		const refreshToken = jwt.sign({__id: user.id, role: "user"}, 
+			process.env.REFRESH_TOKEN_SECRET as string,
+			{
+				expiresIn: "7d",
+			}
+		);
+
+		//store the refresh and access token in httpOnly secure cookie
+		setCookie(res, "refresh_token", refreshToken);
+		setCookie(res, "access_token", accessToken);
+		
+		res.status(200).json({
+			message: "Login Successfull",
+			user: {__id: user.id, email: user.email, name: user.name}
+		})
+
 	} catch (error) {
 		return next(error);
 	}
